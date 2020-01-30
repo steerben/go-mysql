@@ -38,6 +38,7 @@ type Dumper struct {
 	ErrOut io.Writer
 
 	masterDataSkipped bool
+	createInfo        bool
 	maxAllowedPacket  int
 	hexBlob           bool
 }
@@ -63,6 +64,7 @@ func NewDumper(executionPath string, addr string, user string, password string) 
 	d.IgnoreTables = make(map[string][]string)
 	d.ExtraOptions = make([]string, 0, 5)
 	d.masterDataSkipped = false
+	d.createInfo = false
 
 	d.ErrOut = os.Stderr
 
@@ -92,6 +94,16 @@ func (d *Dumper) SetErrOut(o io.Writer) {
 // SkipMasterData: In some cloud MySQL, we have no privilege to use `--master-data`.
 func (d *Dumper) SkipMasterData(v bool) {
 	d.masterDataSkipped = v
+}
+
+// SkipMasterData: In some cloud MySQL, we have no privilege to use `--master-data`.
+func (d *Dumper) Skip(v bool) {
+	d.masterDataSkipped = v
+}
+
+// SetCreateInfo wether to include or exclude creation information in the dump
+func (d *Dumper) SetCreateInfo(v bool) {
+	d.createInfo = v
 }
 
 func (d *Dumper) SetMaxAllowedPacket(i int) {
@@ -168,7 +180,9 @@ func (d *Dumper) Dump(w io.Writer) error {
 	args = append(args, "--quick")
 
 	// We only care about data
-	args = append(args, "--no-create-info")
+	if !d.createInfo {
+		args = append(args, "--no-create-info")
+	}
 
 	// Multi row is easy for us to parse the data
 	args = append(args, "--skip-extended-insert")
