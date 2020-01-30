@@ -9,9 +9,9 @@ import (
 	"github.com/pingcap/parser/ast"
 	uuid "github.com/satori/go.uuid"
 	"github.com/siddontang/go-log/log"
-	"github.com/siddontang/go-mysql/mysql"
-	"github.com/siddontang/go-mysql/replication"
-	"github.com/siddontang/go-mysql/schema"
+	"github.com/steerben/go-mysql/mysql"
+	"github.com/steerben/go-mysql/replication"
+	"github.com/steerben/go-mysql/schema"
 )
 
 func (c *Canal) startSyncer() (*replication.BinlogStreamer, error) {
