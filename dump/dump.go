@@ -39,6 +39,7 @@ type Dumper struct {
 
 	masterDataSkipped bool
 	createInfo        bool
+	compact           bool
 	maxAllowedPacket  int
 	hexBlob           bool
 }
@@ -65,6 +66,7 @@ func NewDumper(executionPath string, addr string, user string, password string) 
 	d.ExtraOptions = make([]string, 0, 5)
 	d.masterDataSkipped = false
 	d.createInfo = false
+	d.compact = false
 
 	d.ErrOut = os.Stderr
 
@@ -104,6 +106,11 @@ func (d *Dumper) Skip(v bool) {
 // SetCreateInfo wether to include or exclude creation information in the dump
 func (d *Dumper) SetCreateInfo(v bool) {
 	d.createInfo = v
+}
+
+// SetCompact wether to use compact format or not
+func (d *Dumper) SetCompact(v bool) {
+	d.compact = v
 }
 
 func (d *Dumper) SetMaxAllowedPacket(i int) {
@@ -175,7 +182,10 @@ func (d *Dumper) Dump(w io.Writer) error {
 	args = append(args, "--skip-lock-tables")
 
 	// Disable uncessary data
-	args = append(args, "--compact")
+	if d.compact {
+		args = append(args, "--compact")
+	}
+
 	args = append(args, "--skip-opt")
 	args = append(args, "--quick")
 
